@@ -62,6 +62,25 @@ const index = () => {
 					/>
 				</GlassOverlay>
 			)}
+			{isNavOpen?.sectionOpen == "menu" && (
+				<GlassOverlay>
+					<SideBar
+						title={"MENU"}
+						listItems={[
+							{
+								title: "Agents",
+							},
+							{
+								title: "Capabilities",
+							},
+							{
+								title: "Audience",
+							},
+						]}
+					/>
+				</GlassOverlay>
+			)}
+
 			{isNavOpen?.sectionOpen == "agents" && (
 				<GlassOverlay>
 					<SideBar
@@ -92,15 +111,15 @@ const index = () => {
 			)}
 			<Navbar />
 			<div className="w-full flex justify-center items-center flex-col mt-[5%]">
-				<p className="text-white text-6xl flex items-center font-['Instrument_Serif']">
+				<p className="text-white md:text-6xl text-3xl flex items-center font-['Instrument_Serif']">
 					<h1 className="font-['Poppins'] font-semibold mr-4">Meet</h1>
 					<i>Metamux</i>
 				</p>{" "}
-				<p className="flex justify-center items-center text-2xl text-white my-6 uppercase font-['Space_Grotesk']">
+				<p className="flex justify-center items-center md:text-2xl text-[12px] text-white my-6 uppercase font-['Space_Grotesk']">
 					<b>Your Terminal</b> <b className="mx-8">Your Rules</b>{" "}
 					<b>All OnChain</b>
 				</p>
-				<p className="text-white font-['Poppins'] mx-[20%] text-center">
+				<p className="text-white font-['Poppins'] md:mx-[20%] mx-4 text-center">
 					MetaMux is a terminal-native Web3 workspace powered by MetaMask Smart
 					Accounts and 1Shot API, interact with any smart contract, send funds,
 					and make x402 payments gaslessly from your command line. Venice AI

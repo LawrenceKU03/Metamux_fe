@@ -49,7 +49,7 @@ const index: React.FC<SidebarProps> = ({ title, listItems }) => {
 	const close = useNavbar((state) => state.close);
 
 	return (
-		<div className="absolute top-0 z-[10] w-[30%] h-full bg-neutral-900 flex justify-center items-center flex-col px-4">
+		<div className="absolute top-0 z-[10] md:w-[30%] w-[90%] h-full bg-neutral-900 flex justify-center items-center flex-col px-4">
 			<div className="py-4 w-full flex justify-left items-center px-8">
 				<FiXCircle
 					size={27}
