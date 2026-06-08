@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { baseSepolia } from "viem/chains";
 
 import useUpgradeEOA from "../hooks/useUpgradeEOA";
-import { useSign7702Authorization } from "@privy-io/react-auth";
+
 
 const index = () => {
 	const isNavOpen = useNavbar((state) => state.isNavOpen);
@@ -17,7 +17,6 @@ const index = () => {
 		(state) => state.setActivePrivyWallet,
 	);
 	const initUpgrade = useUpgradeEOA((state) => state.initUpgrade);
-	const { signAuthorization } = useSign7702Authorization();
 	const { ready, authenticated, login, logout } = usePrivy();
 	const { wallets } = useWallets();
 
@@ -60,12 +59,12 @@ const index = () => {
 	}, [authenticated, ready]);
 
 	useEffect(() => {
-		if (authenticated && ready && wallets.length > 0 ) {
+		if (authenticated && ready && wallets.length > 0) {
 			console.log(wallets[0]);
 			setActivePrivyWallet(wallets[0]);
-			initUpgrade(signAuthorization);
+			initUpgrade();
 		}
-	}, [wallets,ready,authenticated]);
+	}, [wallets, ready, authenticated]);
 
 	return (
 		<div className="w-full h-full">
@@ -181,8 +180,7 @@ const index = () => {
 					<b>All OnChain</b>
 				</p>
 				<p className="text-white font-['Poppins'] md:mx-[20%] mx-4 text-center">
-					MetaMux is a terminal-native Web3 workspace powered by MetaMask Smart
-					Accounts and 1Shot API, interact with any smart contract, send funds,
+					MetaMux is a terminal-native Web3 workspace powered by MetaMask Advanced Permission and 1Shot API, interact with any smart contract, send funds,
 					and make x402 payments gaslessly from your command line. Venice AI
 					parses your plain English prompts through private, uncensored models
 					so every execution stays fast, anonymous, and unrestricted. No browser
@@ -190,7 +188,7 @@ const index = () => {
 				</p>
 				<div className="mt-8">
 					<button
-						onClick={() => logout()}
+						onClick={() => login()}
 						className="px-4 py-2 border-l-2 border-l-white text-white border-r-2 border-r-white  uppercase shadow-[0_0_8px_rgba(0,0,0,0.6)] cursor-pointer"
 					>
 						Try Metamux
