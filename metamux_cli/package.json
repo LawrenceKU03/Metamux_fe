@@ -1,0 +1,5 @@
+{
+  "name": "metamux_cli",
+  "version": "1.0.0",
+  "workspaces": ["packages/*"],
+}
