@@ -3,8 +3,69 @@ import GlassOverlay from "../components/GlassOverlay";
 import SideBar from "../components/Sidebar";
 import useNavbar from "../hooks/useNavbar";
 
+
+import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { useEffect } from "react";
+import { baseSepolia } from "viem/chains";
+
+import useUpgradeEOA from "../hooks/useUpgradeEOA";
+import { useSign7702Authorization } from "@privy-io/react-auth";
+
 const index = () => {
 	const isNavOpen = useNavbar((state) => state.isNavOpen);
+	const setActivePrivyWallet = useUpgradeEOA(
+		(state) => state.setActivePrivyWallet,
+	);
+	const initUpgrade = useUpgradeEOA((state) => state.initUpgrade);
+	const { signAuthorization } = useSign7702Authorization();
+	const { ready, authenticated, login, logout } = usePrivy();
+	const { wallets } = useWallets();
+
+	useEffect(() => {
+		const switchChain = async () => {
+			if (authenticated && ready && window.ethereum) {
+				try {
+					await window.ethereum.request({
+						method: "wallet_switchEthereumChain",
+						params: [{ chainId: `0x${baseSepolia.id.toString(16)}` }],
+					});
+				} catch (error: any) {
+					// Chain not added, try adding it
+					if (error.code === 4902) {
+						try {
+							await window.ethereum.request({
+								method: "wallet_addEthereumChain",
+								params: [
+									{
+										chainId: `0x${baseSepolia.id.toString(16)}`,
+										chainName: baseSepolia.name,
+										nativeCurrency: baseSepolia.nativeCurrency,
+										rpcUrls: [baseSepolia.rpcUrls.default.http[0]],
+										blockExplorerUrls: [
+											baseSepolia.blockExplorers?.default?.url,
+										],
+									},
+								],
+							});
+						} catch (addError) {
+							console.error("Failed to add Monad testnet:", addError);
+						}
+					} else {
+						console.error("Failed to switch chain:", error);
+					}
+				}
+			}
+		};
+		switchChain();
+	}, [authenticated, ready]);
+
+	useEffect(() => {
+		if (authenticated && ready && wallets.length > 0 ) {
+			console.log(wallets[0]);
+			setActivePrivyWallet(wallets[0]);
+			initUpgrade(signAuthorization);
+		}
+	}, [wallets,ready,authenticated]);
 
 	return (
 		<div className="w-full h-full">
@@ -128,7 +189,10 @@ const index = () => {
 					switching. No Etherscan. No gas. Just type and execute.
 				</p>
 				<div className="mt-8">
-					<button className="px-4 py-2 border-l-2 border-l-white text-white border-r-2 border-r-white  uppercase shadow-[0_0_8px_rgba(0,0,0,0.6)] cursor-pointer">
+					<button
+						onClick={() => logout()}
+						className="px-4 py-2 border-l-2 border-l-white text-white border-r-2 border-r-white  uppercase shadow-[0_0_8px_rgba(0,0,0,0.6)] cursor-pointer"
+					>
 						Try Metamux
 					</button>
 					<button className="px-4 py-2 bg-orange-500 text-2xl text-white font-bold font-['Instrument_Serif'] ml-8 uppercase shadow-[0_0_8px_rgba(0,0,0,0.6)] cursor-pointer">
