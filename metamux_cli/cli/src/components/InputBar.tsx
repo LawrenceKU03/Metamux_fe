@@ -9,6 +9,11 @@ import {
 import { useCallback, useEffect, useRef } from "react";
 import { useRenderer } from "@opentui/react";
 import CommandMenu from "./CommandMenu";
+import {
+	useDialog,
+	type dialogContextValue,
+} from "../providers/DialogProvider";
+import { useToast } from "../providers/ToastProvider";
 
 const TEXT_AREA_BINDING: KeyBinding[] = [
 	{ name: "enter", action: "submit" },
@@ -37,6 +42,9 @@ const index = ({ onSubmit }: InputBarProps) => {
 		setSelectedIndex,
 	} = useCommandMenu();
 
+	const dialog = useDialog();
+	const toast = useToast();
+
 	const handleCommand = useCallback(
 		(command: Command) => {
 			const textarea = textareaRef.current;
@@ -45,6 +53,8 @@ const index = ({ onSubmit }: InputBarProps) => {
 			if (command.actions) {
 				command.actions({
 					exit: () => renderer.destroy(),
+					dialog: dialog as dialogContextValue,
+					toast: toast,
 				});
 			} else {
 				textarea.insertText(command.value + " ");
@@ -119,6 +129,9 @@ const index = ({ onSubmit }: InputBarProps) => {
 						ref={textareaRef}
 						placeholder={"What to do onchain today? 'swap 10 usdc to eth'"}
 						paddingY={0.5}
+						focused={
+							(!disabled && !isTopLayer("base")) || !isTopLayer("command_menu")
+						}
 						onSubmit={() => handleSubmit()}
 						onContentChange={handleTextareaContentChange}
 						keyBindings={TEXT_AREA_BINDING}

@@ -10,8 +10,7 @@ export const commands: Command[] = [
 	{
 		title: "delegate",
 		value: "/delegate",
-		description:
-			"Hot-reload active EIP-7702 capabilities by pasting an encrypted session payload.",
+		description: "Hot-reload EIP-7702 via encrypted payload.",
 		actions: (ctx: CommandContext) => {},
 	},
 	{
@@ -19,26 +18,32 @@ export const commands: Command[] = [
 		value: "/revoke",
 		description:
 			"Instantly terminate your agent's execution bounds and revoke delegated authority",
-		actions: (ctx: CommandContext) => {},
+		actions: (ctx: CommandContext) => {
+			ctx.toast.show({
+				message: "Revoke functionality comming soon",
+				variant: "info",
+			});
+		},
 	},
 	{
 		title: "models",
 		value: "/models",
 		description: "Pick which model to use for parsing",
-		actions: (ctx: CommandContext) => {},
-	},
-	{
-		title: "theme",
-		value: "/theme",
-		description:
-			"Customize the terminal TUI appearance, borders, and color configuration.",
-		actions: (ctx: CommandContext) => {},
+		actions: (ctx: CommandContext) => {
+			ctx.dialog.open({
+				title: "Venice AI Models",
+				children: "Where the ai models from venice ai would be",
+				type: "text",
+			});
+		},
 	},
 	{
 		title: "exit",
 		value: "/exit",
 		description:
 			"Safely close the MetaMux workspace background daemon and end your session.",
-		actions: (ctx: CommandContext) => {},
+		actions: (ctx: CommandContext) => {
+			ctx.exit();
+		},
 	},
 ];
