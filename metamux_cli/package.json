@@ -2,4 +2,10 @@
   "name": "metamux_cli",
   "version": "1.0.0",
   "workspaces": ["packages/*"],
+  "scripts": {
+    "cli": "bun run --watch ./cli/src/index.tsx"
+  },
+  "dependencies": {
+    "react": "^19.2.7"
+  }
 }
