@@ -47,7 +47,7 @@ const Dialog = ({ currentDialog, close }: dialogProps) => {
 	useKeyboard((key) => {
 		if (!currentDialog || !isTopLayer("dialog")) return;
 
-		if (key.name == "c" || key.name == "escape") {
+		if (key.name == "d") {
 			close();
 			return;
 		}

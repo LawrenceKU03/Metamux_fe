@@ -1,38 +1,28 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
+import { createMemoryRouter, RouterProvider } from "react-router";
+import RootLayout from "./layouts/";
+import Home from "./screens/Home";
+import NewSession from "./screens/NewSession";
 
-import Header from "./components/Header";
-import InputBar from "./components/InputBar";
-import { KeyboardProvider } from "./providers/KeyboardProvider";
-import { DialogProvider } from "./providers/DialogProvider";
-import { ToastProvider } from "./providers/ToastProvider";
+const router = createMemoryRouter([
+	{
+		path: "/",
+		element: <RootLayout />,
+		children: [
+			{ index: true, element: <Home /> },
+			{ path: "/session/new", element: <NewSession /> },
+		],
+	},
+]);
 
-function App() {
-	return (
-		<KeyboardProvider>
-			<DialogProvider>
-				<ToastProvider>
-					<box
-						alignItems="center"
-						width="100%"
-						height="100%"
-						justifyContent="center"
-						flexGrow={1}
-						backgroundColor={"#0D0D12"}
-						gap={3}
-					>
-						<Header />
-						<box width="100%" alignItems="center" justifyContent="center">
-							<box maxWidth={78} width="100%">
-								<InputBar onSubmit={() => {}} />
-							</box>
-						</box>
-					</box>
-				</ToastProvider>
-			</DialogProvider>
-		</KeyboardProvider>
-	);
-}
+const App = () => {
+	return <RouterProvider router={router} />;
+};
 
-const renderer = await createCliRenderer();
+const renderer = await createCliRenderer({
+	targetFps: 60,
+	exitOnCtrlC: false,
+});
+
 createRoot(renderer).render(<App />);

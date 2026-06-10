@@ -102,6 +102,7 @@ const DialogSearchList = <T,>({
 				onContentChange={handleContentChange}
 				ref={inputRef}
 				paddingY={1}
+				focused={true}
 			/>
 			<scrollbox ref={scrollRef} height={visibleEnd}>
 				{filteredItems.length == 0 ? (
@@ -115,7 +116,7 @@ const DialogSearchList = <T,>({
 								flexDirection="row"
 								height={1}
 								overflow="hidden"
-								backgroundColor={isSelected ? "#FFA34D" : "#000"}
+								backgroundColor={isSelected ? "#E67E22" : "#000"}
 								onMouseMove={() => {
 									setSelectedIndex(id);
 									if (handleHighlightedIndex) {
