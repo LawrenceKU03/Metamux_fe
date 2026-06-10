@@ -120,7 +120,7 @@ const DialogSearchList = <T,>({
 								onMouseMove={() => {
 									setSelectedIndex(id);
 									if (handleHighlightedIndex) {
-										handleHighlightedIndex(item, isSelected);
+										handleHighlightedIndex(item);
 									}
 								}}
 								onMouseDown={() => handleSelectedIndex(item)}
