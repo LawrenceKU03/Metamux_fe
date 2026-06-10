@@ -14,6 +14,7 @@ import {
 	type dialogContextValue,
 } from "../providers/DialogProvider";
 import { useToast } from "../providers/ToastProvider";
+import ModelDialogList from "./ModelDialogList";
 
 const TEXT_AREA_BINDING: KeyBinding[] = [
 	{ name: "enter", action: "submit" },
@@ -122,7 +123,6 @@ const index = ({ onSubmit }: InputBarProps) => {
 					onExecute={handleCommandExecute}
 				/>
 			)}
-
 			<box width="100%" border={["left"]} borderColor={"#E67E22"}>
 				<box backgroundColor={"#1A1A1A"} paddingY={1} paddingX={2}>
 					<textarea

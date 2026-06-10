@@ -4,7 +4,7 @@ const index = () => {
   return (<box flexDirection="row" alignItems="center" gap={1}>
     <text>Build</text>
     <text fg="gray" attributes={TextAttributes.DIM}>></text>
-    <text>Venice AI</text>
+    <text>Qwen Venice AI</text>
   </box>
   );
 };

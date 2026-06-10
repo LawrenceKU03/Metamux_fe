@@ -1,17 +1,18 @@
 import { type Command, type CommandContext } from "./types";
+import ModelDialogList from "../ModelDialogList";
 
 export const commands: Command[] = [
 	{
 		title: "x402",
 		value: "/x402",
 		description: "Make x402 payment",
-		actions: (ctx: CommandContext) => {},
+		actions: (ctx: CommandContext) => { },
 	},
 	{
 		title: "delegate",
 		value: "/delegate",
-		description: "Hot-reload EIP-7702 via encrypted payload.",
-		actions: (ctx: CommandContext) => {},
+		description: "Hot-reload active EIP-7702 via encrypted payload.",
+		actions: (ctx: CommandContext) => { },
 	},
 	{
 		title: "revoke",
@@ -32,11 +33,17 @@ export const commands: Command[] = [
 		actions: (ctx: CommandContext) => {
 			ctx.dialog.open({
 				title: "Venice AI Models",
-				children: "Where the ai models from venice ai would be",
-				type: "text",
+				children: <ModelDialogList />
 			});
 		},
 	},
+	{
+		title: "stash",
+		value: "/stash",
+		description: "Stash delegations you use frequently",
+		actions: (ctx: CommandContext) => { },
+	},
+
 	{
 		title: "exit",
 		value: "/exit",

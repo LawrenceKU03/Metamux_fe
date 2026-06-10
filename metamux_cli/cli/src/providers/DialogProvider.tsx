@@ -90,7 +90,7 @@ const Dialog = ({ currentDialog, close }: dialogProps) => {
 				>
 					<text attributes={TextAttributes.BOLD}>{title}</text>
 					<text attributes={TextAttributes.BOLD} onMouseDown={() => close()}>
-						esc
+						ESC
 					</text>
 				</box>
 				{type === "text" ? (
