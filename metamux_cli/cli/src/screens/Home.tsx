@@ -9,11 +9,9 @@ import {
 
 const index = () => {
 	const navig = useNavigate();
-	const { InteractWithAgent } = useModelContext() as ModelContextProps;
 
 	const handleSubmit = useCallback(
 		(text: string) => {
-			InteractWithAgent(text);
 			navig("/session/new", { state: { message: text } });
 		},
 		[navig],

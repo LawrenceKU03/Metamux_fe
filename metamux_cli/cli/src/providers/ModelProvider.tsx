@@ -155,7 +155,7 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 		(text: string, prompt?: string) => {
 			setAgentStatus("Parsing");
 			push({
-				content: "Hello user!",
+				content: `Hello user! ${text}`,
 				role: "BOT",
 				model: activeAgentModel?.name,
 			});
