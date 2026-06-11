@@ -1,27 +1,19 @@
 import { TextAttributes } from "@opentui/core";
-import useFileHandler from "../hooks/useFileHandler";
-import { useEffect, useState } from "react";
-import type { Model } from "../models";
+import { useModelContext, type ModelContextProps } from "../providers/ModelProvider";
+import { useEffect } from "react";
+
 
 const index = () => {
 
-  const [activeAgentModel, setActiveAngle] = useState<Model>({
-    id: "e2ee-venice-uncensored",
-    name: "Venice Uncensored 1.1",
-    contextWindow: 32000,
-  },
-  );
-  const { readFile } = useFileHandler();
+  const { activeModel, agentStatus } = useModelContext() as ModelContextProps;
 
-  useEffect(() => {
-    setActiveAngle(readFile("activeAIModel"));
-  }, [])
+  useEffect(() => { }, [activeModel])
 
   return (
     <box flexDirection="row" alignItems="center" gap={1}>
-      <text attributes={TextAttributes.BOLD}>Idle</text>
+      <text attributes={TextAttributes.BOLD}>{agentStatus}</text>
       <text fg="gray" attributes={TextAttributes.DIM}>></text>
-      <text>{activeAgentModel.name}</text>
+      <text>{activeModel.name}</text>
     </box>
   );
 };

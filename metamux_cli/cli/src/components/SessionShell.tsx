@@ -2,14 +2,19 @@ import { TextAttributes } from "@opentui/core";
 import type { ReactNode } from "react";
 import InputBar from "./InputBar";
 import Spinner from "./Spinner";
+import {
+	useModelContext,
+	type ModelContextProps,
+} from "../providers/ModelProvider";
 
 type Props = {
 	children?: ReactNode;
 	onSubmit: (text: string) => void;
-	loading: boolean;
 };
 
-const index = ({ children, onSubmit, loading = false }: Props) => {
+const index = ({ children, onSubmit }: Props) => {
+	const { agentStatus } = useModelContext() as ModelContextProps;
+
 	return (
 		<box
 			flexDirection="column"
@@ -36,7 +41,7 @@ const index = ({ children, onSubmit, loading = false }: Props) => {
 				paddingY={1}
 			>
 				<box flexDirection="row" alignItems="center" gap={2}>
-					{loading ? <Spinner /> : null}
+					{agentStatus != "Idle" ? <Spinner /> : null}
 				</box>
 				<box
 					flexDirection="row"

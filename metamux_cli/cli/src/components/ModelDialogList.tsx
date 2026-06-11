@@ -1,18 +1,27 @@
 import DialogSearchList from "./DialogSearchList";
 import { MODELS, type Model } from "../models";
 import useFileHandler from "../hooks/useFileHandler";
+import {
+	useModelContext,
+	type ModelContextProps,
+} from "../providers/ModelProvider";
+import { useDialog } from "../providers/DialogProvider";
 
 const ModelDialogList = () => {
 	const { writeFile } = useFileHandler();
+	const { setActiveAgentModel } = useModelContext() as ModelContextProps;
+	const dialog = useDialog();
 
-	const handleHightLightedIndex = (item: Model) => {
+	const handleSelectedIndex = (item: Model) => {
 		writeFile("activeAIModel", JSON.stringify(item));
+		setActiveAgentModel(item);
+		dialog?.close();
 	};
 
 	return (
 		<box>
 			<DialogSearchList
-				handleHighlightedIndex={handleHightLightedIndex}
+				handleSelectedIndex={handleSelectedIndex}
 				placeHolder="Search AI models"
 				emptyText="Model not found"
 				listItems={MODELS}
