@@ -14,7 +14,6 @@ import {
 	type dialogContextValue,
 } from "../providers/DialogProvider";
 import { useToast } from "../providers/ToastProvider";
-import ModelDialogList from "./ModelDialogList";
 
 const TEXT_AREA_BINDING: KeyBinding[] = [
 	{ name: "enter", action: "submit" },
@@ -27,7 +26,7 @@ type InputBarProps = {
 
 const index = ({ onSubmit }: InputBarProps) => {
 	const textareaRef = useRef<TextareaRenderable>(null);
-	const onSubmitRef = useRef<() => void>(() => {});
+
 	const { isTopLayer, setResponder } =
 		useKeyboardContext() as KeyboardContextProviderProps;
 	const renderer = useRenderer();

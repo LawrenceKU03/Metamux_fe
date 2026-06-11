@@ -1,11 +1,11 @@
-import { TextAttributes } from "@opentui/core";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import InputBar from "./InputBar";
 import Spinner from "./Spinner";
 import {
 	useModelContext,
 	type ModelContextProps,
 } from "../providers/ModelProvider";
+import { useTerminalDimensions } from "@opentui/react";
 
 type Props = {
 	children?: ReactNode;
@@ -13,7 +13,14 @@ type Props = {
 };
 
 const index = ({ children, onSubmit }: Props) => {
-	const { agentStatus } = useModelContext() as ModelContextProps;
+	const { agentStatus, activeSessionManager } =
+		useModelContext() as ModelContextProps;
+	const scrollRef = useRef(null);
+	const { height } = useTerminalDimensions();
+
+	useEffect(() => {
+		scrollRef.current.scrollTo(height * 999);
+	}, [activeSessionManager.activeSession?.messages.length]);
 
 	return (
 		<box
@@ -24,7 +31,7 @@ const index = ({ children, onSubmit }: Props) => {
 			paddingY={1}
 			backgroundColor={"#0d0d12"}
 		>
-			<scrollbox stickyScroll stickStart="bottom">
+			<scrollbox stickyScroll stickStart="bottom" flexGrow={1} ref={scrollRef}>
 				<box>{children}</box>
 			</scrollbox>
 			<box flexShrink={0}>
@@ -41,7 +48,8 @@ const index = ({ children, onSubmit }: Props) => {
 				paddingY={1}
 			>
 				<box flexDirection="row" alignItems="center" gap={2}>
-					{agentStatus != "Idle" ? <Spinner /> : null}
+					{agentStatus != "Idle" ? <Spinner /> : <box flexDirection="row" alignItems="center"><text fg="#FFA34D">Chain</text><text fg="gray"> >> </text><text>[BaseSepolia]</text></box>}
+
 				</box>
 				<box
 					flexDirection="row"

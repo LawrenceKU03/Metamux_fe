@@ -1,3 +1,5 @@
+import { env } from "bun";
+
 export type Model = {
 	id: string;
 	name: string;
@@ -6,8 +8,8 @@ export type Model = {
 
 export const MODELS: Model[] = [
 	{
-		id: "claude-haiku-4-5-20251001",
-		name: "Claude Haiku 4.5",
+		id: "claude-opus-4-7",
+		name: "Claude Opus 4.7",
 		contextWindow: 200000,
 	},
 	{
@@ -36,3 +38,15 @@ export const MODELS: Model[] = [
 		contextWindow: 32000,
 	},
 ];
+
+export const MODEL_ERC7715_PARSE_FUNCTION = (
+	erc7715TargetScopeSchema: string,
+) => {
+	return `
+You are the MetaMux AI Agent Execution Parser.
+The user wants to grant your session key specific, limited wallet permissions.
+You must ONLY reply with a JSON object matching this schema. Do not include markdown wraps or explanations.
+
+Schema:${erc7715TargetScopeSchema}
+`;
+};

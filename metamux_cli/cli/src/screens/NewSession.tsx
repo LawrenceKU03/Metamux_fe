@@ -21,6 +21,7 @@ const index = () => {
 
 	useEffect(() => {
 		push({ content: state.message, role: "USER" });
+		InteractWithAgent(state.message);
 	}, []);
 
 	return (
@@ -29,7 +30,7 @@ const index = () => {
 				if (agentStatus != "Idle") {
 					return;
 				}
-				await push({ content: text, role: "USER" });
+				push({ content: text, role: "USER" });
 				InteractWithAgent(text);
 			}}
 		>
