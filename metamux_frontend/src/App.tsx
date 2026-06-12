@@ -4,8 +4,9 @@ import SideBar from "../components/Sidebar";
 import useNavbar from "../hooks/useNavbar";
 
 import { usePrivy, useWallets } from "@privy-io/react-auth";
-import { useEffect } from "react";
-import { baseSepolia } from "viem/chains";
+import { useEffect, useState } from "react";
+import { sepolia } from "viem/chains";
+import useEncryptionHandler from "../hooks/useEncryptionHandler";
 
 import useUpgradeEOA from "../hooks/useUpgradeEOA";
 
@@ -15,32 +16,39 @@ const index = () => {
 		(state) => state.setActivePrivyWallet,
 	);
 	const initUpgrade = useUpgradeEOA((state) => state.initUpgrade);
+	const [payload, setPayload] = useState<any | null>(null);
 	const { ready, authenticated, login, logout } = usePrivy();
 	const { wallets } = useWallets();
+	const { readToken } = useEncryptionHandler();
 
 	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const delegationRequestPayload = params.get("delegationRequestPayload");
+		if (delegationRequestPayload) {
+			setPayload(JSON.parse(readToken(delegationRequestPayload)));
+			console.log(JSON.parse(readToken(delegationRequestPayload)));
+		}
+
 		const switchChain = async () => {
 			if (authenticated && ready && window.ethereum) {
 				try {
 					await window.ethereum.request({
 						method: "wallet_switchEthereumChain",
-						params: [{ chainId: `0x${baseSepolia.id.toString(16)}` }],
+						params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
 					});
 				} catch (error: any) {
 					// Chain not added, try adding it
-					if (error.code === 4902) {
+					if (error.code === 11155111) {
 						try {
 							await window.ethereum.request({
 								method: "wallet_addEthereumChain",
 								params: [
 									{
-										chainId: `0x${baseSepolia.id.toString(16)}`,
-										chainName: baseSepolia.name,
-										nativeCurrency: baseSepolia.nativeCurrency,
-										rpcUrls: [baseSepolia.rpcUrls.default.http[0]],
-										blockExplorerUrls: [
-											baseSepolia.blockExplorers?.default?.url,
-										],
+										chainId: `0x${sepolia.id.toString(16)}`,
+										chainName: sepolia.name,
+										nativeCurrency: sepolia.nativeCurrency,
+										rpcUrls: [sepolia.rpcUrls.default.http[0]],
+										blockExplorerUrls: [sepolia.blockExplorers?.default?.url],
 									},
 								],
 							});
@@ -59,11 +67,12 @@ const index = () => {
 	useEffect(() => {
 		if (authenticated && ready && wallets.length > 0) {
 			console.log(wallets[0]);
+			initUpgrade(payload);
 			setActivePrivyWallet(wallets[0]);
-			initUpgrade();
 		}
 	}, [wallets, ready, authenticated]);
 
+	useEffect(() => { }, [payload]);
 	return (
 		<div className="w-full h-full">
 			{isNavOpen?.sectionOpen == "audience" && (

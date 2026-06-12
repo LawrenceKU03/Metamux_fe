@@ -1,8 +1,7 @@
 import { create } from "zustand";
-import { createWalletClient, custom, parseUnits } from "viem";
-import { baseSepolia } from "viem/chains";
+import { createWalletClient, custom } from "viem";
+import { sepolia } from "viem/chains";
 import { erc7715ProviderActions } from "@metamask/smart-accounts-kit/actions";
-import { erc7710RedeemActions } from "@metamask/smart-accounts-kit/actions";
 
 type UseEOAUpgradeProps = {
 	isUpgraded: boolean;
@@ -10,7 +9,7 @@ type UseEOAUpgradeProps = {
 	activePrivyEVMWallet: any | null;
 	permissionContext: any | null;
 	setActivePrivyWallet: (_activePrivyWallet: any) => void;
-	initUpgrade: () => Promise<void>;
+	initUpgrade: (erc7715Payload: any) => Promise<void>;
 };
 
 const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
@@ -23,7 +22,7 @@ const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
 		set({ activePrivyEVMWallet: _activePrivyWallet });
 	},
 
-	initUpgrade: async () => {
+	initUpgrade: async (erc7715Payload: any) => {
 		const { activePrivyEVMWallet } = get();
 
 		if (!activePrivyEVMWallet) {
@@ -43,7 +42,7 @@ const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
 			// Fixed: clean standard object method signature mapping for custom transport
 			const walletClient = createWalletClient({
 				account: activePrivyEVMWallet.address as `0x${string}`,
-				chain: baseSepolia,
+				chain: sepolia,
 				transport: custom({
 					async request({ method, params }: any) {
 						if (method === "chainId") {
@@ -54,31 +53,8 @@ const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
 				}),
 			}).extend(erc7715ProviderActions());
 
-			const sessionExpiryEpoch =
-				Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 1 week duration
-			const agentSessionAccountAddress =
-				"0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
-
-			console.log("Routing clear requestExecutionPermissions call...");
-
 			const grantedPermissions = await walletClient.requestExecutionPermissions(
-				[
-					{
-						chainId: baseSepolia.id,
-						expiry: sessionExpiryEpoch,
-						to: agentSessionAccountAddress as `0x${string}`,
-						permission: {
-							type: "native-token-periodic",
-							data: {
-								periodAmount: parseUnits("0.5", 18),
-								periodDuration: 86400,
-								justification:
-									"Allows the MetaMux Agent to execute gasless actions on your behalf.",
-							},
-							isAdjustmentAllowed: false,
-						},
-					},
-				],
+				[erc7715Payload],
 			);
 
 			console.log(
