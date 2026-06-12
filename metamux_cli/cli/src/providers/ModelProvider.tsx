@@ -14,7 +14,7 @@ const API_KEY_VENICE =
 	"VENICE_INFERENCE_KEY_-Yfvoqe8GmiLEklEvzh6UofHgEWUe2jQK54u2Ye5v3";
 
 import OpenAI from "openai";
-import type { ChatCompletionParseParams } from "openai/resources/chat/completions.mjs";
+import useDetectOnchainIntent from "../hooks/useDetectOnchainIntent";
 
 const client = new OpenAI({
 	apiKey: API_KEY_VENICE,
@@ -165,11 +165,6 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 		[setActiveModel],
 	);
 
-	type VeniceAgentMessage = {
-		role: string;
-		content: string;
-	};
-
 	const InteractWithAgent = useCallback(
 		async (text: string, prompt?: string) => {
 			setAgentStatus("Parsing");
@@ -191,6 +186,21 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 				}
 			});
 
+			if (
+				["swap", "send", "transfer", "balance", "wallet address"].some(
+					(keyword) => text.includes(keyword),
+				)
+			) {
+				cleanedOutMessages.push({ role: "user", content: text });
+				const res_json = await useDetectOnchainIntent(text, activeAgentModel);
+				push({
+					role: "BOT",
+					content: `${JSON.stringify(res_json)}`,
+					model: activeAgentModel.name,
+				});
+				setAgentStatus("Idle");
+				return;
+			}
 			// 4. Append the CURRENT user input (this is what `text` is for)
 			cleanedOutMessages.push({ role: "user", content: text });
 

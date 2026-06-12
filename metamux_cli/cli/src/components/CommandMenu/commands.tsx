@@ -9,6 +9,15 @@ export const commands: Command[] = [
 		actions: (ctx: CommandContext) => { },
 	},
 	{
+		title: "chains",
+		value: "/chains",
+		description: "Switch between supported chains",
+		actions: (ctx: CommandContext) => {
+			ctx.toast.show({ message: "Coming soon!!" });
+		},
+	},
+
+	{
 		title: "delegate",
 		value: "/delegate",
 		description: "Hot-reload active EIP-7702 via encrypted payload.",
@@ -33,7 +42,7 @@ export const commands: Command[] = [
 		actions: (ctx: CommandContext) => {
 			ctx.dialog.open({
 				title: "Venice AI Models",
-				children: <ModelDialogList />
+				children: <ModelDialogList />,
 			});
 		},
 	},

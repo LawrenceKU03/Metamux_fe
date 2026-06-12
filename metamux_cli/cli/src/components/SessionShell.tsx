@@ -19,7 +19,7 @@ const index = ({ children, onSubmit }: Props) => {
 	const { height } = useTerminalDimensions();
 
 	useEffect(() => {
-		scrollRef.current.scrollTo(height * 999);
+		scrollRef.current.scrollTo(height * 3_000);
 	}, [activeSessionManager.activeSession?.messages.length]);
 
 	return (
@@ -51,14 +51,15 @@ const index = ({ children, onSubmit }: Props) => {
 					{agentStatus != "Idle" ? <Spinner /> : <box flexDirection="row" alignItems="center"><text fg="#FFA34D">Chain</text><text fg="gray"> >> </text><text>[BaseSepolia]</text></box>}
 
 				</box>
-				<box
-					flexDirection="row"
+				<box flexDirection="row"
 					alignItems="center"
 					gap={1}
 					flexShrink={0}
 					marginLeft="auto"
 				>
-					<text>Built for the Metamask Dev Cook-off</text>
+					<text>0ax3df67Ea</text>
+					<text fg="gray"> {`<<`} </text>
+					<text fg="#FFA34D">Agent Delegation Wallet Address</text>
 				</box>
 			</box>
 		</box>

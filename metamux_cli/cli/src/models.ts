@@ -33,7 +33,7 @@ export const MODELS: Model[] = [
 		contextWindow: 128000,
 	},
 	{
-		id: "e2ee-venice-uncensored",
+		id: "e2ee-venice-uncensored-24b-p",
 		name: "Venice Uncensored 1.1",
 		contextWindow: 32000,
 	},

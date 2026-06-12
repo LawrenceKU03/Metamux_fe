@@ -1,5 +1,9 @@
 import StatusBar from "./StatusBar";
-import { TextareaRenderable, type KeyBinding } from "@opentui/core";
+import {
+	TextareaRenderable,
+	TextAttributes,
+	type KeyBinding,
+} from "@opentui/core";
 import type { Command } from "./CommandMenu/types";
 import useCommandMenu from "./CommandMenu/useCommandMenu";
 import {
@@ -135,7 +139,17 @@ const index = ({ onSubmit }: InputBarProps) => {
 						onContentChange={handleTextareaContentChange}
 						keyBindings={TEXT_AREA_BINDING}
 					></textarea>
-					<StatusBar />
+					<box flexDirection="row" alignItems="center">
+						<StatusBar />
+
+						<text
+							marginLeft={"auto"}
+							fg="gray"
+							attributes={TextAttributes.BOLD}
+						>
+							Built for the Metamask Dev Cook-off
+						</text>
+					</box>
 				</box>
 			</box>
 		</box>
