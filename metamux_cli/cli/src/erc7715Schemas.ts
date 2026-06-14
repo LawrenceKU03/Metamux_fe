@@ -1,5 +1,5 @@
-import { sepolia } from "viem/chains";
-import { parseUnits } from "viem";
+import { baseSepolia } from "viem/chains";
+import { parseUnits, toHex } from "viem";
 
 export const erc7715NativeTokenSendSchema = (
 	toDelegateTarget: string,
@@ -7,14 +7,14 @@ export const erc7715NativeTokenSendSchema = (
 	duration: string,
 ) => {
 	return {
-		chainId: sepolia.id,
-		expiry: duration,
+		chainId: baseSepolia.id,
+		expiry: parseInt(duration),
 		to: toDelegateTarget as `0x${string}`,
 		permission: {
 			type: "native-token-periodic",
 			data: {
-				periodAmount: parseUnits(`${amount}`, 18),
-				periodDuration: `${duration}`,
+				periodAmount: toHex(parseUnits(`${amount}`, 18)),
+				periodDuration: parseInt(`60`), //cool down between tx
 				justification:
 					"Allows the MetaMux Agent To Execute Gasless Native Token Send Actions On Your Behalf.",
 			},

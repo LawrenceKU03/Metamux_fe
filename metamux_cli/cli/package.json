@@ -16,8 +16,12 @@
 	},
 	"dependencies": {
 		"@ai-sdk/openai-compatible": "^2.0.49",
+		"@metamask/smart-accounts-kit": "^1.6.0",
 		"@opentui/core": "^0.3.2",
 		"@opentui/react": "^0.3.2",
+		"fernet": "^0.3.3",
+		"fflate": "^0.8.3",
+		"fzstd": "^0.1.1",
 		"openai": "^6.42.0",
 		"opentui-spinner": "^0.0.7",
 		"react": "^19.2.6",

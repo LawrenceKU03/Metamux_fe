@@ -8,13 +8,17 @@ import {
 import type { Model } from "../models";
 import type { ReactNode } from "react";
 import useFileHandler from "../hooks/useFileHandler";
-
+import { parseEther } from "viem";
 const BASE_URL_VENICE = "https://api.venice.ai/api/v1";
 const API_KEY_VENICE =
 	"VENICE_INFERENCE_KEY_-Yfvoqe8GmiLEklEvzh6UofHgEWUe2jQK54u2Ye5v3";
 
 import OpenAI from "openai";
 import useDetectOnchainIntent from "../hooks/useDetectOnchainIntent";
+import { erc7715NativeTokenSendSchema } from "../erc7715Schemas";
+import useEncryptionHandler from "../hooks/useEncryptionHandler";
+import useAgentWallet from "../hooks/useAgentWallet";
+import useDetectHexPayload from "../hooks/useDetectHexPayload";
 
 const client = new OpenAI({
 	apiKey: API_KEY_VENICE,
@@ -110,7 +114,7 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 					sessions: [],
 				});
 			}
-		} catch {}
+		} catch { }
 	}, []);
 
 	const titleSession = () => {
@@ -165,6 +169,10 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 		[setActiveModel],
 	);
 
+	const { createToken, readToken } = useEncryptionHandler();
+	const { getOrCreateAgentWallet, readAgentWallet, redeemNativeTransfer } =
+		useAgentWallet();
+
 	const InteractWithAgent = useCallback(
 		async (text: string, prompt?: string) => {
 			setAgentStatus("Parsing");
@@ -186,6 +194,32 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 				}
 			});
 
+			if (useDetectHexPayload(text)) {
+				const textInfo = readToken(text);
+
+				//const delegStash = readFile("delegationsStash.json");
+				writeFile(`agentCurrentDelegation.json`, JSON.stringify(textInfo));
+
+				const res = await client.chat.completions.create({
+					model: activeAgentModel.id,
+					messages: [
+						{
+							role: "user",
+							content: `${JSON.stringify(textInfo)} Interpret this ERC-7715 permission grant JSON and explain in plain English what authority it delegates: the permission type, the exact amount/rate the agent can spend (convert from wei), the time window (period duration and expiry, converted from unix timestamps), which addresses are involved (delegator, delegate/agent), and any conditions or limits — phrased as "this lets the agent do X for Y duration up to Z amount." as no '**' or bolden of any text and keep it under 250 characters capitalize meaning turn "this is" to "This Is" turn the first letter of each word to a Uppercase your reply NOTE: we time is in seconds so turn the seconds into hours or minutes and the periodDuration(the cool down time between transactions the user sent and it is not automatic) is 60 SECONDS`,
+						},
+					],
+				});
+				const reply = res.choices[0]?.message?.content ?? "No response";
+
+				push({
+					role: "BOT",
+					content: `NEW AGENT CAPABILITIES\n\n${reply}`,
+					model: activeAgentModel.name,
+				});
+				setAgentStatus("Idle");
+				return;
+			}
+
 			if (
 				["swap", "send", "transfer", "balance", "wallet address"].some(
 					(keyword) => text.includes(keyword),
@@ -193,11 +227,95 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 			) {
 				cleanedOutMessages.push({ role: "user", content: text });
 				const res_json = await useDetectOnchainIntent(text, activeAgentModel);
-				push({
-					role: "BOT",
-					content: `${JSON.stringify(res_json)}`,
-					model: activeAgentModel.name,
+				const delegationCache = readFile("agentCurrentDelegation.json");
+
+				const requestedWei = parseEther(String(res_json.amount)).toString();
+				const periodAmount = delegationCache.permission.data.periodAmount;
+				const expiryTimestamp = delegationCache.rules?.find(
+					(r) => r.type === "expiry",
+				)?.data?.timestamp;
+				const startTime = delegationCache.permission.data.startTime;
+				const now = Math.floor(Date.now() / 1000);
+
+				const res = await client.chat.completions.create({
+					model: activeAgentModel.id,
+					messages: [
+						{
+							role: "user",
+							content: `You are validating a transaction against an on-chain spending delegation.
+
+Delegation allows:
+- Type: ${delegationCache.permission.type}
+- Max amount per period: ${periodAmount} wei
+- Period duration: ${delegationCache.permission.data.periodDuration} seconds
+- Valid from (unix): ${startTime}
+- Expires (unix): ${expiryTimestamp}
+- Justification: "${delegationCache.permission.data.justification}"
+
+Current time (unix): ${now}
+
+Requested transaction:
+- Action: "${text}"
+- Amount: ${requestedWei} wei
+- Recipient: ${res_json.targetAddress}
+
+Rules:
+1. Requested amount (${requestedWei}) must be <= max amount per period (${periodAmount}).
+2. Current time (${now}) must be >= valid from (${startTime}) and <= expires (${expiryTimestamp}).
+3. The action type must match what the delegation's justification permits (e.g. a native ETH send matches "native token send" justifications).
+
+Respond with ONLY the word "true" if ALL rules pass, or "false" if ANY rule fails. No other text.`,
+						},
+					],
 				});
+
+				const reply = res.choices[0]?.message?.content ?? "No response";
+
+				if (reply.toLowerCase() == "true") {
+					try {
+						const txhash = await redeemNativeTransfer({
+							recipient: res_json.targetAddress,
+							amount: res_json.amount,
+							delegationManager: delegationCache.delegationManager,
+							permissionContext: delegationCache.context,
+						});
+						push({
+							role: "BOT",
+							content: `Transaction successful click the link below to check your transaction on base sepolia scan:\n\nhttps://sepolia.basescan.org/tx/${txhash}`,
+							model: activeAgentModel.name,
+						});
+						setAgentStatus("Idle");
+						return;
+					} catch (error) { }
+				}
+
+				if (reply.toLowerCase() == "false") {
+					push({
+						role: "BOT",
+						content: `Transaction request not within agent delegated scope please increase delegate for your metamux agent to be able to carry out this transaction`,
+						model: activeAgentModel.name,
+					});
+				}
+
+				//code to handle delegation request for the users metamux ai agent wallet
+				if (
+					res_json.type.toLowerCase() === "send" &&
+					res_json.token.toLowerCase() === "eth"
+				) {
+					const expiry = Math.floor(Date.now() / 1000) + 3600 * 24;
+					const delegationReq = erc7715NativeTokenSendSchema(
+						readAgentWallet().address, // replace this with the users metamux agent eoa wallet
+						res_json.amount,
+						expiry.toString(),
+					);
+
+					push({
+						role: "BOT",
+						content: `Please click the link below to sign this 24 hour delegation request to your agent \n\n${createToken(JSON.stringify(delegationReq))}`,
+						model: activeAgentModel.name,
+					});
+				}
+
 				setAgentStatus("Idle");
 				return;
 			}
@@ -231,7 +349,11 @@ export const ModelProvider = ({ children }: ModelProviderProps) => {
 	useEffect(() => {
 		try {
 			setActiveModel(readFile("activeAIModel"));
-		} catch {}
+		} catch { }
+	}, []);
+
+	useEffect(() => {
+		getOrCreateAgentWallet();
 	}, []);
 
 	return (

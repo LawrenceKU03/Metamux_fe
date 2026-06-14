@@ -45,7 +45,11 @@ const useDetectOnchainIntent = async (userInput: string, model: Model) => {
 							amount: {
 								type: ["string", "null"],
 								description:
-									"The amount of crypto involved (e.g., '1.5', '100'). Return null if not applicable.",
+									"The numeric quantity only, as a plain decimal string with NO unit, symbol, or token name attached. " +
+									"Example: 'send 0.005 ETH to bob' -> amount is '0.005', NOT '0.005 ETH'. " +
+									"Example: 'swap 10 usdc to eth' -> amount is '10', NOT '10 USDC'. " +
+									"The token/currency name goes in its own field — never append it here. " +
+									"Return null if no amount is mentioned.",
 							},
 							targetAddress: {
 								type: ["string", "null"],
@@ -61,7 +65,7 @@ const useDetectOnchainIntent = async (userInput: string, model: Model) => {
 								description: "The token the user would want to swap to.",
 							},
 						},
-						required: ["type", "amount", "targetAddress", "token"],
+						required: ["type", "amount", "targetAddress", "token", "toToken"],
 						additionalProperties: false,
 					},
 				},

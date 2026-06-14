@@ -6,6 +6,7 @@ import {
 	type ModelContextProps,
 } from "../providers/ModelProvider";
 import { useTerminalDimensions } from "@opentui/react";
+import useAgentWallet, { type AgentWalletDetails } from "../hooks/useAgentWallet";
 
 type Props = {
 	children?: ReactNode;
@@ -17,6 +18,9 @@ const index = ({ children, onSubmit }: Props) => {
 		useModelContext() as ModelContextProps;
 	const scrollRef = useRef(null);
 	const { height } = useTerminalDimensions();
+	const { readAgentWallet } = useAgentWallet();
+	//const [agentData, setAgentData] = useState<AgentWalletDetails | null>(null);
+	const agentData = readAgentWallet();
 
 	useEffect(() => {
 		scrollRef.current.scrollTo(height * 3_000);
@@ -48,7 +52,7 @@ const index = ({ children, onSubmit }: Props) => {
 				paddingY={1}
 			>
 				<box flexDirection="row" alignItems="center" gap={2}>
-					{agentStatus != "Idle" ? <Spinner /> : <box flexDirection="row" alignItems="center"><text fg="#FFA34D">Chain</text><text fg="gray"> >> </text><text>[BaseSepolia]</text></box>}
+					{agentStatus != "Idle" ? <Spinner /> : <box flexDirection="row" alignItems="center"><text fg="#FFA34D">Chain</text><text fg="gray"> >> </text><text>[Base Sepolia]</text></box>}
 
 				</box>
 				<box flexDirection="row"
@@ -57,7 +61,7 @@ const index = ({ children, onSubmit }: Props) => {
 					flexShrink={0}
 					marginLeft="auto"
 				>
-					<text>0ax3df67Ea</text>
+					<text>{agentData && agentData.address}</text>
 					<text fg="gray"> {`<<`} </text>
 					<text fg="#FFA34D">Agent Delegation Wallet Address</text>
 				</box>
