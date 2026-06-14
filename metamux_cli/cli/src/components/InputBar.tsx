@@ -10,7 +10,7 @@ import {
 	useKeyboardContext,
 	type KeyboardContextProviderProps,
 } from "../providers/KeyboardProvider";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRenderer } from "@opentui/react";
 import CommandMenu from "./CommandMenu";
 import {
@@ -97,6 +97,7 @@ const index = ({ onSubmit }: InputBarProps) => {
 
 		onSubmit(text);
 		textarea.setText("");
+		setIsTextChanging(false);
 	}, [disabled, onSubmit, showCommandMenu, selectedIndex]);
 
 	useEffect(() => {

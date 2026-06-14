@@ -120,7 +120,7 @@ const useAgentWallet = () => {
 			data,
 			permissionContext,
 			delegationManager,
-			gas: 300000n,
+			gas: 500000n,
 		});
 
 		return transactionHash;

@@ -64,7 +64,7 @@ const index = ({ content, model }: Props) => {
 						</box>
 					)}
 					{texts.length > 1 && texts[1]?.length > 300 && (
-						<text>{`\nPlease paste in the encrypted delegation payload you would be asked to copy into your metamux session to activate this delegation request for metamux agent`}</text>
+						<text>{`\nPaste in the encrypted delegation payload you would be asked to copy into your metamux session to activate this delegation request for metamux agent`}</text>
 					)}
 					{texts.length > 1 && texts[1]?.length < 300 && (
 						<text

@@ -23,8 +23,8 @@ const index = ({ children, onSubmit }: Props) => {
 	const agentData = readAgentWallet();
 
 	useEffect(() => {
-		scrollRef.current.scrollTo(height * 3_000);
-	}, [activeSessionManager.activeSession?.messages.length]);
+		scrollRef.current.scrollTo(height * 10_000);
+	}, [activeSessionManager]);
 
 	return (
 		<box
