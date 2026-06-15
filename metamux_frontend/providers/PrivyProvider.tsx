@@ -1,7 +1,7 @@
 // @ts-ignore
 
 import { PrivyProvider } from "@privy-io/react-auth";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { baseSepolia } from "viem/chains";
 
 type PrivyProviderProps = {

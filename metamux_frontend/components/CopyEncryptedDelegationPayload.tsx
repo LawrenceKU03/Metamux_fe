@@ -23,9 +23,13 @@ const index = () => {
 		setSignedDelegation(token);
 	}, [permissionContext]);
 
-	const { copied, copyToClipboard } = useCopyToClipboard();
+	const { copyToClipboard } = useCopyToClipboard();
 
-	const truncateString = (str, maxLength, suffix = "...") => {
+	const truncateString = (
+		str: string,
+		maxLength: number,
+		suffix: string = "...",
+	) => {
 		// If the string is already short enough, return it as-is
 		if (str.length <= maxLength) {
 			return str;
@@ -44,7 +48,7 @@ const index = () => {
 						{signedDelegation && truncateString(signedDelegation, 350, "***")}
 					</p>
 					<button
-						onClick={() => copyToClipboard(signedDelegation)}
+						onClick={() => copyToClipboard(signedDelegation as string)}
 						className="bg-orange-500 p-4 rounded-[24px] font-bold text-white text-center flex justify-center items-center mt-6 mx-auto font-['Poppins']"
 					>
 						Copy Delegation Payload <FaRegCopy size={24} className="ml-2" />

@@ -23,7 +23,7 @@ const index = () => {
 	const [payload, setPayload] = useState<any | null>(null);
 	const [revokePayload, setRevokePayload] = useState<any | null>(null);
 
-	const { ready, authenticated, login, logout } = usePrivy();
+	const { ready, authenticated, logout } = usePrivy();
 	const { wallets } = useWallets();
 	const { readToken } = useEncryptionHandler();
 	const signedDelegation = useUpgradeEOA((state) => state.permissionContext);
@@ -86,7 +86,7 @@ const index = () => {
 				initUpgrade(payload);
 			}
 			if (revokePayload) {
-				initRevoke(revokePayload);
+				initRevoke();
 			}
 			setActivePrivyWallet(wallets[0]);
 		}
