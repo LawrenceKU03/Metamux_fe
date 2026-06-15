@@ -2,12 +2,13 @@ import Navbar from "../components/Navbar";
 import GlassOverlay from "../components/GlassOverlay";
 import SideBar from "../components/Sidebar";
 import useNavbar from "../hooks/useNavbar";
+import CopyEncryptedDelegationPayload from "../components/CopyEncryptedDelegationPayload";
 
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import useEncryptionHandler from "../hooks/useEncryptionHandler";
-
+import useRevokeDelegation from "../hooks/useRevokeDelegation";
 import useUpgradeEOA from "../hooks/useUpgradeEOA";
 
 const index = () => {
@@ -16,39 +17,51 @@ const index = () => {
 		(state) => state.setActivePrivyWallet,
 	);
 	const initUpgrade = useUpgradeEOA((state) => state.initUpgrade);
+	const initRevoke=useRevokeDelegation((state)=>state.initRevoke)
 	const [payload, setPayload] = useState<any | null>(null);
+	const [revokePayload,setRevokePayload]=useState<any|null>(null);
+
 	const { ready, authenticated, login, logout } = usePrivy();
 	const { wallets } = useWallets();
 	const { readToken } = useEncryptionHandler();
+  const signedDelegation = useUpgradeEOA((state) => state.permissionContext);
 
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const delegationRequestPayload = params.get("delegationRequestPayload");
+		const revokeDelegationRequestPayload=params.get("revokeRequestPayload");
+
 		if (delegationRequestPayload) {
-			setPayload(JSON.parse(readToken(delegationRequestPayload)));
-			console.log(JSON.parse(readToken(delegationRequestPayload)));
+			setPayload(readToken(delegationRequestPayload));
+			console.log(readToken(delegationRequestPayload));
 		}
+
+	if (revokeDelegationRequestPayload) {
+			setRevokePayload(readToken(revokeDelegationRequestPayload));
+			console.log(readToken(revokeDelegationRequestPayload));
+		}
+
 
 		const switchChain = async () => {
 			if (authenticated && ready && window.ethereum) {
 				try {
 					await window.ethereum.request({
 						method: "wallet_switchEthereumChain",
-						params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
+						params: [{ chainId: `0x${baseSepolia.id.toString(16)}` }],
 					});
 				} catch (error: any) {
 					// Chain not added, try adding it
-					if (error.code === 11155111) {
+					if (error.code === 84532.) {
 						try {
 							await window.ethereum.request({
 								method: "wallet_addEthereumChain",
 								params: [
 									{
-										chainId: `0x${sepolia.id.toString(16)}`,
-										chainName: sepolia.name,
-										nativeCurrency: sepolia.nativeCurrency,
-										rpcUrls: [sepolia.rpcUrls.default.http[0]],
-										blockExplorerUrls: [sepolia.blockExplorers?.default?.url],
+										chainId: `0x${baseSepolia.id.toString(16)}`,
+										chainName: baseSepolia.name,
+										nativeCurrency: baseSepolia.nativeCurrency,
+										rpcUrls: [baseSepolia.rpcUrls.default.http[0]],
+										blockExplorerUrls: [baseSepolia.blockExplorers?.default?.url],
 									},
 								],
 							});
@@ -67,7 +80,12 @@ const index = () => {
 	useEffect(() => {
 		if (authenticated && ready && wallets.length > 0) {
 			console.log(wallets[0]);
+			if(payload){
 			initUpgrade(payload);
+			}
+			if(revokePayload){
+				initRevoke(revokePayload);
+			}
 			setActivePrivyWallet(wallets[0]);
 		}
 	}, [wallets, ready, authenticated]);
@@ -75,6 +93,7 @@ const index = () => {
 	useEffect(() => { }, [payload]);
 	return (
 		<div className="w-full h-full">
+		{signedDelegation && <CopyEncryptedDelegationPayload />}
 			{isNavOpen?.sectionOpen == "audience" && (
 				<GlassOverlay>
 					<SideBar
@@ -188,7 +207,7 @@ const index = () => {
 				</p>
 				<p className="text-white font-['Poppins'] md:mx-[20%] mx-4 text-center">
 					MetaMux is a terminal-native Web3 workspace powered by MetaMask Smart
-					Accounts and 1Shot API, interact with any smart contract, send funds,
+					Accounts , interact with any smart contract, send funds,
 					and make x402 payments gaslessly from your command line. Venice AI
 					parses your plain English prompts through private, uncensored models
 					so every execution stays fast, anonymous, and unrestricted. No browser

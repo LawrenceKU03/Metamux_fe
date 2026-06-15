@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createWalletClient, custom } from "viem";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { erc7715ProviderActions } from "@metamask/smart-accounts-kit/actions";
 
 type UseEOAUpgradeProps = {
@@ -42,7 +42,7 @@ const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
 			// Fixed: clean standard object method signature mapping for custom transport
 			const walletClient = createWalletClient({
 				account: activePrivyEVMWallet.address as `0x${string}`,
-				chain: sepolia,
+				chain: baseSepolia,
 				transport: custom({
 					async request({ method, params }: any) {
 						if (method === "chainId") {
@@ -59,13 +59,13 @@ const useEOAUpgrade = create<UseEOAUpgradeProps>((set, get) => ({
 
 			console.log(
 				"Permissions successfully granted by MetaMask:",
-				grantedPermissions,
+				grantedPermissions[0],
 			);
 
 			set({
 				isUpgraded: true,
 				upgradeStatus: "upgraded",
-				permissionContext: grantedPermissions,
+				permissionContext: grantedPermissions[0],
 			});
 		} catch (error) {
 			console.error("Advanced Permission upgrade handoff failed:", error);
