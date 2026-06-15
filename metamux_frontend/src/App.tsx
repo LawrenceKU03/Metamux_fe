@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import Navbar from "../components/Navbar";
 import GlassOverlay from "../components/GlassOverlay";
 import SideBar from "../components/Sidebar";
@@ -17,26 +19,26 @@ const index = () => {
 		(state) => state.setActivePrivyWallet,
 	);
 	const initUpgrade = useUpgradeEOA((state) => state.initUpgrade);
-	const initRevoke=useRevokeDelegation((state)=>state.initRevoke)
+	const initRevoke = useRevokeDelegation((state) => state.initRevoke)
 	const [payload, setPayload] = useState<any | null>(null);
-	const [revokePayload,setRevokePayload]=useState<any|null>(null);
+	const [revokePayload, setRevokePayload] = useState<any | null>(null);
 
 	const { ready, authenticated, login, logout } = usePrivy();
 	const { wallets } = useWallets();
 	const { readToken } = useEncryptionHandler();
-  const signedDelegation = useUpgradeEOA((state) => state.permissionContext);
+	const signedDelegation = useUpgradeEOA((state) => state.permissionContext);
 
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const delegationRequestPayload = params.get("delegationRequestPayload");
-		const revokeDelegationRequestPayload=params.get("revokeRequestPayload");
+		const revokeDelegationRequestPayload = params.get("revokeRequestPayload");
 
 		if (delegationRequestPayload) {
 			setPayload(readToken(delegationRequestPayload));
 			console.log(readToken(delegationRequestPayload));
 		}
 
-	if (revokeDelegationRequestPayload) {
+		if (revokeDelegationRequestPayload) {
 			setRevokePayload(readToken(revokeDelegationRequestPayload));
 			console.log(readToken(revokeDelegationRequestPayload));
 		}
@@ -80,10 +82,10 @@ const index = () => {
 	useEffect(() => {
 		if (authenticated && ready && wallets.length > 0) {
 			console.log(wallets[0]);
-			if(payload){
-			initUpgrade(payload);
+			if (payload) {
+				initUpgrade(payload);
 			}
-			if(revokePayload){
+			if (revokePayload) {
 				initRevoke(revokePayload);
 			}
 			setActivePrivyWallet(wallets[0]);
@@ -93,7 +95,7 @@ const index = () => {
 	useEffect(() => { }, [payload]);
 	return (
 		<div className="w-full h-full">
-		{signedDelegation && <CopyEncryptedDelegationPayload />}
+			{signedDelegation && <CopyEncryptedDelegationPayload />}
 			{isNavOpen?.sectionOpen == "audience" && (
 				<GlassOverlay>
 					<SideBar

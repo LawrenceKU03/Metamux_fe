@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import { useState, useCallback, useRef } from "react";
 
 interface UseCopyToClipboardOptions {

@@ -1,3 +1,4 @@
+// @ts-ignore
 import useUpgradeEOA from "../hooks/useUpgradeEOA";
 import GlassOverlay from "./GlassOverlay";
 import useEncryptionHandler from "../hooks/useEncryptionHandler";

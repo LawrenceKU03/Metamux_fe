@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import { PrivyProvider } from "@privy-io/react-auth";
 import { ReactNode } from "react";
 import { baseSepolia } from "viem/chains";
@@ -16,9 +18,7 @@ const index: React.FC<PrivyProviderProps> = ({ children }) => {
 					accentColor: "#676FFF",
 				},
 				loginMethods: ["wallet"],
-				embeddedWallets: {
-					createOnLogin: "users-without-wallets", // auto-create for Web2 users
-				},
+				embeddedWallets: {},
 				defaultChain: baseSepolia,
 				supportedChains: [baseSepolia],
 			}}
